@@ -24,6 +24,8 @@ public class View implements Observer {
         //frame.setContentPane(panel);
         frame.setTitle("Java Clock");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         final PriorityQueue<Alarm> q;
+          q = new SortedArrayPriorityQueue<>(5);
         
         // Start of border layout code
         
@@ -56,7 +58,7 @@ public class View implements Observer {
 
         menu.add(exitMenuItem);
         
-   
+        
 
 
 
@@ -71,24 +73,33 @@ public class View implements Observer {
           final JFrame addalarm = new JFrame();
           addalarm.setLayout(null);
          addalarm.setSize(400, 400);
+         
+          JLabel namelabel =new JLabel("Alarm Name");  
+        namelabel.setBounds(160,10,100,50);
+       final JTextField alarmname = new JTextField("",20);
+       alarmname.setBounds(145,60,100,30);
+        
+         
        
          JLabel datelabel =new JLabel("Date");  
-        datelabel.setBounds(80,10,50,50);
+        datelabel.setBounds(80,110,50,50);
         JLabel dateformat =new JLabel("(yyyymmdd)");  
-        dateformat.setBounds(60,50,100,50);
+        dateformat.setBounds(60,150,100,50);
         
         JLabel timelabel =new JLabel("Time");  
-        timelabel.setBounds(280,10,50,50);
+        timelabel.setBounds(280,110,50,50);
         JLabel timeformat =new JLabel("(hh:mm:ss)");  
-        timeformat.setBounds(270,50,100,50);
+        timeformat.setBounds(270,150,100,50);
 
        final JTextField Date = new JTextField("",20);
-       Date.setBounds(50,100,100,30);
+       Date.setBounds(50,200,100,30);
        
        final JTextField Time = new JTextField("",20);
-       Time.setBounds(250,100,100,30);
+       Time.setBounds(250,200,100,30);
        
-       
+         addalarm.add(namelabel);
+         addalarm.add(alarmname);
+         
        
          addalarm.add(datelabel);
          addalarm.add(dateformat);
@@ -184,25 +195,39 @@ public class View implements Observer {
         try {
             dateformat.parse(InputDate);
             LocalTime.parse(InputTime);
+           String InputAlarm = alarmname.getText();
+            
             
                 String regx = ":";
-            char[] ca = regx.toCharArray();
-            for (char c : ca) {
-               InputTime = InputTime.replace(""+c, "");
+                char[] ca = regx.toCharArray();
+                 for (char c : ca) {
+                   InputTime = InputTime.replace(""+c, "");
              }
          
             
              
                String ConcatAlarm = InputDate+InputTime;
-               long result = Long.parseLong(ConcatAlarm);
-               
-               
-                JTextField DialogMessage = new JTextField(ConcatAlarm);
-               
-               DialogMessage.setBounds(150,200,100,50);
-               
              
-              addalarm.add(DialogMessage);
+               
+                
+                Alarm alarm = new Alarm(InputAlarm);
+                long priority = Long.parseLong(ConcatAlarm.substring(ConcatAlarm.lastIndexOf(' ') + 1));
+                System.out.println("Adding " + alarm.getName() + " with priority " + priority);
+                try {
+                    q.add(alarm, priority);
+                } catch (QueueOverflowException a) {
+                    System.out.println("Add operation failed: " + a);
+               }
+             
+             //  JTextField DialogMessageName = new JTextField(InputAlarm);
+               // JTextField DialogMessage = new JTextField(ConcatAlarm);
+               
+                 //  DialogMessageName.setBounds(150,150,100,50);
+              // DialogMessage.setBounds(150,200,100,50);
+            
+               
+              //addalarm.add(DialogMessageName);
+             // addalarm.add(DialogMessage);
               // addalarm.add(DialogMessageTime);
               // DialogMessage.setVisible(true);
               //DialogMessageTime.setVisible(true);
@@ -226,6 +251,7 @@ public class View implements Observer {
     public void actionPerformed(ActionEvent e){
         Date.setText("");
         Time.setText("");
+        alarmname.setText("");
         addalarm.dispose();
         addalarm.setVisible(true);
      

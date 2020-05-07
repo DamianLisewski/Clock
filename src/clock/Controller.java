@@ -13,7 +13,7 @@ public class Controller {
     
     public Controller(Model m, View v) {
         model = m;
-        view = v;
+        view  = v;
         
         listener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
