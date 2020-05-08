@@ -9,13 +9,19 @@ package clock;
 public class Alarm {
 
     protected String name;
+    protected long alarm;
 
-    public Alarm(String name) {
+    public Alarm(String name , long alarm) {
         this.name = name;
+        this.alarm = alarm;
     }
 
     public String getName() {
         return name;
+    }
+    
+      public long getAlarm() {
+        return alarm;
     }
 
     @Override

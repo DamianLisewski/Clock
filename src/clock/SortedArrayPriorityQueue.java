@@ -65,7 +65,7 @@ public class SortedArrayPriorityQueue<T> implements PriorityQueue<T> {
         } else {
             /* Scan backwards looking for insertion point */
             int i = tailIndex;
-            while (i > 0 && ((PriorityItem<T>) Alarms[i - 1]).getPriority() < priority) {
+            while (i > 0 && ((PriorityItem<T>) Alarms[i - 1]).getPriority() > priority) {
                 Alarms[i] = Alarms[i - 1];
                 i = i - 1;
             }

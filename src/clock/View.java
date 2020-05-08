@@ -8,25 +8,83 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class View implements Observer {
     
     ClockPanel panel;
+     ActionListener listener;
+    javax.swing.Timer timer;
+    
     
     public View(Model model) {
-        JFrame frame = new JFrame();
+        final JFrame frame = new JFrame();
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
         frame.setTitle("Java Clock");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          final PriorityQueue<Alarm> q;
           q = new SortedArrayPriorityQueue<>(5);
+          
+             int day=0;
+        int month=0;
+        int year=0;
+         int hour = 0;
+         int minute = 0;
+         int second = 0;
         
+        Calendar date = Calendar.getInstance();
+        
+        day = date.get(Calendar.DAY_OF_MONTH);
+        month = date.get(Calendar.MONTH)+1;
+        year = date.get(Calendar.YEAR);
+         hour = date.get(Calendar.HOUR_OF_DAY);
+        minute = date.get(Calendar.MINUTE);
+        second = date.get(Calendar.SECOND);
+        
+        Date time = new Date();
+        
+       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); //like "HH:mm" or just "mm", whatever you want
+       
+       
+       String currenttime = sdf.format(time);
+       
+       
+       Date current = new Date();
+        
+       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd"); //like "HH:mm" or just "mm", whatever you want
+       
+       
+       final String currentdate = dat.format(current);
+           String regx = ":";
+                char[] ca = regx.toCharArray();
+                 for (char c : ca) {
+                   currenttime = currenttime.replace(""+c, "");
+             }
+      
+        String day1 = Integer.toString(day); 
+        String month1 = Integer.toString(month); 
+        String year1 = Integer.toString(year); 
+      String hour1 = Integer.toString(hour); 
+        String minute1 = Integer.toString(minute); 
+        String second1 = Integer.toString(second);
+       // System.out.println(currentdate);
+       // System.out.println(currenttime);
+        String Checkdate = currentdate+currenttime;
+        final long now = Long.parseLong(Checkdate);
         // Start of border layout code
         
         // I've just put a single button in each of the border positions:
@@ -78,8 +136,11 @@ public class View implements Observer {
         namelabel.setBounds(160,10,100,50);
        final JTextField alarmname = new JTextField("",20);
        alarmname.setBounds(145,60,100,30);
-        
-         
+        String dash = "/";
+        String dot = ":";
+        String space = " ";
+         JLabel currentdatelabel =new JLabel(day1+dash+month1+dash+year1+space+hour1+dot+minute1+dot+second1);  
+        currentdatelabel.setBounds(150,250,120,50);
        
          JLabel datelabel =new JLabel("Date");  
         datelabel.setBounds(80,110,50,50);
@@ -100,6 +161,8 @@ public class View implements Observer {
          addalarm.add(namelabel);
          addalarm.add(alarmname);
          
+       addalarm.add(currentdatelabel);
+       
        
          addalarm.add(datelabel);
          addalarm.add(dateformat);
@@ -142,8 +205,8 @@ public class View implements Observer {
 
         menu1.add(ViewalarmItem);
          final JFrame viewalarm = new JFrame();
-         viewalarm.setTitle("Add Alarm");
-           viewalarm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         viewalarm.setTitle("View Alarm");
+           viewalarm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
          viewalarm.setSize(400, 400); 
        
          ViewalarmItem.addActionListener(new ActionListener() {
@@ -152,7 +215,7 @@ public class View implements Observer {
             public void actionPerformed(ActionEvent e) {
                
                 
-       
+            System.out.println(q); 
             viewalarm.setVisible(true);
             }
 
@@ -190,6 +253,9 @@ public class View implements Observer {
        DateFormat timeformat = new SimpleDateFormat("HH:mm:ss");
         dateformat.setLenient(false);
         timeformat.setLenient(false);
+        
+        
+     
           
         
         try {
@@ -210,13 +276,28 @@ public class View implements Observer {
              
                
                 
-                Alarm alarm = new Alarm(InputAlarm);
+               
                 long priority = Long.parseLong(ConcatAlarm.substring(ConcatAlarm.lastIndexOf(' ') + 1));
-                System.out.println("Adding " + alarm.getName() + " with priority " + priority);
+                
+                 Alarm alarm = new Alarm(InputAlarm,priority);
+                
+             
                 try {
+                    
+                    if(priority<=now){
+                    
+                    JOptionPane.showMessageDialog(addalarm, "Date needs to be set in the future : Set Date Time in futute", "Wrong Date", JOptionPane.ERROR_MESSAGE);
+                    
+                    }
+                    else{
                     q.add(alarm, priority);
-                } catch (QueueOverflowException a) {
-                    System.out.println("Add operation failed: " + a);
+                     String MessageAdd = "Adding a Alarm called " + alarm.getName() + " with the Date" + InputDate + " and Time " +InputTime ;
+                JOptionPane.showMessageDialog(addalarm, MessageAdd, "Added Alarm", JOptionPane.INFORMATION_MESSAGE);
+                    }} catch (QueueOverflowException a) {
+                    
+                    
+                     JOptionPane.showMessageDialog(addalarm, "Queue is Full : Remove Some Alarms!", "Queue Full", JOptionPane.INFORMATION_MESSAGE);
+                    
                }
              
              //  JTextField DialogMessageName = new JTextField(InputAlarm);
@@ -236,7 +317,7 @@ public class View implements Observer {
         } catch (ParseException | DateTimeParseException eg) {
             
             
-    
+          
             
            JOptionPane.showMessageDialog(addalarm, "Wrong Format (yyyyMMdd)", "Date", JOptionPane.ERROR_MESSAGE);
            JOptionPane.showMessageDialog(addalarm, "Wrong Format (HH:mm:ss)", "Time", JOptionPane.ERROR_MESSAGE);
@@ -267,6 +348,92 @@ public class View implements Observer {
         
         
         
+        class checkalarm extends TimerTask {
+    @Override
+    public void run() {
+        try{
+            long alarm = q.head().getAlarm();
+                       
+       
+        
+     
+        
+      
+        
+        Date time = new Date();
+        
+       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); //like "HH:mm" or just "mm", whatever you want
+       
+       
+       String currenttime = sdf.format(time);
+       
+       
+       Date current = new Date();
+        
+       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd"); //like "HH:mm" or just "mm", whatever you want
+       
+       
+       final String currentdate = dat.format(current);
+           String regx = ":";
+                char[] ca = regx.toCharArray();
+                 for (char c : ca) {
+                   currenttime = currenttime.replace(""+c, "");
+             }
+      
+                String nowtime = currentdate+currenttime;
+                final long nowtimenow = Long.parseLong(nowtime);
+                   
+       
+            
+            
+            
+       
+                   
+            
+                    if(nowtimenow ==alarm){
+                   // System.out.println("ALARM!!!!!!");
+                         try {
+                   AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(this.getClass().getResource("/clock/resources/alarm.wav"));
+                    Clip clip = AudioSystem.getClip();
+                   clip.open(audioInputStream);
+                   clip.start();
+                   q.remove();
+                     JOptionPane.showMessageDialog(frame, "Alarm Going Off", "ALARM!!!!", JOptionPane.INFORMATION_MESSAGE);
+                   
+                   
+                    }
+                          catch (Exception ex) {
+        ex.printStackTrace();
+        
+       
+         }
+                   
+               
+                   }
+                   
+                    
+                    
+                    
+                } catch (QueueUnderflowException ex) {
+                  
+                }
+                   
+       
+                 }
+        
+        
+        
+    }
+
+
+// And From your main() method or any other method
+        Timer timer1 = new Timer();
+        timer1.schedule(new checkalarm(), 0, 1000);
+        
+        
+   
+        
+        
         
         
         
@@ -274,9 +441,12 @@ public class View implements Observer {
     }
     
     
+    
+    @Override
     public void update(Observable o, Object arg) {
         panel.repaint();
     }
+    
     
     
 }
