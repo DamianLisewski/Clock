@@ -23,312 +23,291 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+/**
+ *
+ * @author Damian Lisewski 
+ * @version 1
+ * 
+ * Main class which deals with anything to do with the alarm system
+ * it deals with the view of the GUI behind the alarm system
+ * it also deals with the actions of some aspects of alarm system
+ * 
+ * 
+ * 
+ */
 public class View implements Observer {
     
     ClockPanel panel;
-     ActionListener listener;
+    ActionListener listener;
     javax.swing.Timer timer;
     
-    
+    /**
+     * listener called every second to check whether item stored in the head of the queue equals current time/date
+     * if so the alarm will ring and a pop up will display to the user
+     * 
+     * listener called every second to check whether item stored in the head of the queue is not smaller than the current time/date
+     * if so the alarm will be remove from the queue
+     * 
+     * method initilised frame for the main clock panel
+     * method will create new frames for action relation to the deletion, creation , and viewing of alarm.
+     * buttons,boxes ,labels and pop ups generated depending on different circumstances
+     * 
+     * 
+     * @param model
+     */
     public View(Model model) {
-        final JFrame frame = new JFrame();
-        panel = new ClockPanel(model);
+       final JFrame frame = new JFrame(); //create new frame
+       panel = new ClockPanel(model); //create new panel with model input
         //frame.setContentPane(panel);
-        frame.setTitle("Java Clock");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         final PriorityQueue<Alarm> q;
-          q = new SortedArrayPriorityQueue<>(5);
+       frame.setTitle("Java Clock"); //set title of frame to text
+       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //on close exit system
+       
+       final PriorityQueue<Alarm> q; //initialize new queu with alarm item
+       q = new SortedArrayPriorityQueue<>(5); //create new sorted array with size of 5
           
-             int day=0;
-        int month=0;
-        int year=0;
-         int hour = 0;
-         int minute = 0;
-         int second = 0;
+       Calendar date = Calendar.getInstance();     
+          
+       int day=0;
+       int month=0;
+       int year=0;
+       int hour = 0;
+       int minute = 0;
+       int second = 0;
+  
+        //set current date and time values into seperate int variables 
+       day = date.get(Calendar.DAY_OF_MONTH);
+       month = date.get(Calendar.MONTH)+1;
+       year = date.get(Calendar.YEAR);
+       hour = date.get(Calendar.HOUR_OF_DAY);
+       minute = date.get(Calendar.MINUTE);
+       second = date.get(Calendar.SECOND);
         
-        Calendar date = Calendar.getInstance();
-        
-        day = date.get(Calendar.DAY_OF_MONTH);
-        month = date.get(Calendar.MONTH)+1;
-        year = date.get(Calendar.YEAR);
-         hour = date.get(Calendar.HOUR_OF_DAY);
-        minute = date.get(Calendar.MINUTE);
-        second = date.get(Calendar.SECOND);
-        
-        Date time = new Date();
-        
-       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); //like "HH:mm" or just "mm", whatever you want
-       
-       
+       Date time = new Date();
+       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); 
        String currenttime = sdf.format(time);
        
        
        Date current = new Date();
-        
-       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd"); //like "HH:mm" or just "mm", whatever you want
-       
-       
+       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd");
        final String currentdate = dat.format(current);
-           String regx = ":";
+        
+       //code replaces : with nothing for formatied date
+       String regx = ":";
                 char[] ca = regx.toCharArray();
                  for (char c : ca) {
                    currenttime = currenttime.replace(""+c, "");
              }
-      
-        String day1 = Integer.toString(day); 
-        String month1 = Integer.toString(month); 
-        String year1 = Integer.toString(year); 
-      String hour1 = Integer.toString(hour); 
-        String minute1 = Integer.toString(minute); 
-        String second1 = Integer.toString(second);
-       // System.out.println(currentdate);
-       // System.out.println(currenttime);
-        String Checkdate = currentdate+currenttime;
-        final long now = Long.parseLong(Checkdate);
-        // Start of border layout code
-        
-        // I've just put a single button in each of the border positions:
-        // PAGE_START (i.e. top), PAGE_END (bottom), LINE_START (left) and
-        // LINE_END (right). You can omit any of these, or replace the button
-        // with something else like a label or a menu bar. Or maybe you can
-        // figure out how to pack more than one thing into one of those
-        // positions. This is the very simplest border layout possible, just
-        // to help you get started.
-        
-        Container pane = frame.getContentPane();
-        
 
+        String Checkdate = currentdate+currenttime; //concationate string adding currentdate and currenttime
+        final long now = Long.parseLong(Checkdate); //parse string checkdate to long
+
+        Container pane = frame.getContentPane();
+ 
+        //set size of panel in the frame and center it
         panel.setPreferredSize(new Dimension(400, 400));
         pane.add(panel, BorderLayout.CENTER);
          
+        //create a menubar and add it to the main frame
         JMenuBar menuBar = new JMenuBar();
-
         frame.setJMenuBar(menuBar);
-
         
-        JMenu menu = new JMenu("File");
-
+        //create and add a new section to the menu called file
+        JMenu menu = new JMenu("Program");
         menuBar.add(menu);
         
-        
-
+        //create new and add and item to menu part of the menu bar
         JMenuItem exitMenuItem = new JMenuItem("Exit");
-
         menu.add(exitMenuItem);
         
-        
-
-
-
+        //create and add a new section to the menu
         menu = new JMenu("Alarm");
-
         menuBar.add(menu);
 
+        //create and add a new menu item to the menu
         JMenuItem addalarmitem = new JMenuItem("Set Alarm");
-
         menu.add(addalarmitem);
         
-          final JFrame addalarm = new JFrame();
-          addalarm.setLayout(null);
-         addalarm.setSize(400, 400);
+        final JFrame addalarm = new JFrame(); //create new frame called addalarm
+        addalarm.setLayout(null); //set layout of frame to null
+        addalarm.setSize(400, 400); //set size of frame
          
-          JLabel namelabel =new JLabel("Alarm Name");  
-        namelabel.setBounds(160,10,100,50);
-       final JTextField alarmname = new JTextField("",20);
-       alarmname.setBounds(145,60,100,30);
-        String dash = "/";
-        String dot = ":";
-        String space = " ";
-         JLabel currentdatelabel =new JLabel(day1+dash+month1+dash+year1+space+hour1+dot+minute1+dot+second1);  
-        currentdatelabel.setBounds(150,250,120,50);
+        JLabel namelabel =new JLabel("Alarm Name");  //set new label with a text 
+        namelabel.setBounds(160,10,100,50); //set location of the name label
+        final JTextField alarmname = new JTextField("",20); //set new box  
+        alarmname.setBounds(145,60,100,30); //set location of the name box
        
-         JLabel datelabel =new JLabel("Date");  
-        datelabel.setBounds(80,110,50,50);
-        JLabel dateformat =new JLabel("(yyyymmdd)");  
-        dateformat.setBounds(60,150,100,50);
+        final String dash = "/"; //set string
+        final String dot = ":"; //set string
+        final String space = " "; //set string 
         
-        JLabel timelabel =new JLabel("Time");  
-        timelabel.setBounds(280,110,50,50);
-        JLabel timeformat =new JLabel("(hh:mm:ss)");  
-        timeformat.setBounds(270,150,100,50);
+        final JLabel currentdatelabel =new JLabel(""); //set new label without a text
+        currentdatelabel.setBounds(150,250,120,50); //set location of current date time label
+        
+        JLabel datelabel =new JLabel("Date"); //set new label with a text 
+        datelabel.setBounds(80,110,50,50); //set location of the date label
+        JLabel dateformat =new JLabel("(yyyymmdd)");  //set new label with a text
+        dateformat.setBounds(60,150,100,50); //set location of the dateformat label
+        
+        JLabel timelabel =new JLabel("Time"); //set new label with a text  
+        timelabel.setBounds(280,110,50,50); //set location for the date format label
+        JLabel timeformat =new JLabel("(hh:mm:ss)"); //set new label with a text 
+        timeformat.setBounds(270,150,100,50); //set location for timeformat label
 
-       final JTextField Date = new JTextField("",20);
-       Date.setBounds(50,200,100,30);
-       
-       final JTextField Time = new JTextField("",20);
-       Time.setBounds(250,200,100,30);
-       
-         addalarm.add(namelabel);
-         addalarm.add(alarmname);
+        final JTextField Date = new JTextField("",20); //initialise box for date
+        Date.setBounds(50,200,100,30); //set location of date box 
+        final JTextField Time = new JTextField("",20); //initialise box for time
+        Time.setBounds(250,200,100,30); //set location of time box 
+        
+        addalarm.add(currentdatelabel); // add current date label to addalarm frame
+        addalarm.add(namelabel); //add alarm name label to the addalarm frame
+        addalarm.add(alarmname); //add alarm name box to the addalarm frame
          
-       addalarm.add(currentdatelabel);
-       
-       
-         addalarm.add(datelabel);
-         addalarm.add(dateformat);
-         addalarm.add(Date);
+        addalarm.add(datelabel); //add date label to addalarm frame
+        addalarm.add(dateformat); //add date label to addalarm frame
+        addalarm.add(Date); //add date box to addalarm frame
          
-          addalarm.add(timelabel);
-          addalarm.add(timeformat);
-          addalarm.add(Time);
+        addalarm.add(timelabel); //add time label to addalarm frame
+        addalarm.add(timeformat); //add time format label to addalarm frame
+        addalarm.add(Time); //add time box to addalarm frame
        
-       JButton Addalarmbutton = new JButton("Add");
-        Addalarmbutton.setBounds(100,300,100,50);
-          addalarm.add(Addalarmbutton);
-           JButton Clear = new JButton("Reset");
-        Clear.setBounds(200,300,100,50);
-          addalarm.add(Clear);
+        JButton Addalarmbutton = new JButton("Add"); //create new button called Addalarmbutton with text "add"
+        Addalarmbutton.setBounds(100,300,100,50); //set the location of the button
+        addalarm.add(Addalarmbutton);//add add button to the addalarm frame
+        JButton Clear = new JButton("Reset"); //create new button called clear with text "Reset"
+        Clear.setBounds(200,300,100,50); //set the location of clear button
+        addalarm.add(Clear); //add clear button to the addalarm frame
            
-          
-         addalarmitem.addActionListener(new ActionListener() {
-           
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        JMenuItem deletealarmitem = new JMenuItem("Delete Alarm"); //new Jmenuitem called deletealarmitem , set text to deleteitem
+        menu.add(deletealarmitem); //add delete menu item to the menu
+
+        JMenu menu1 = new JMenu("View"); //create a new menu called menu1 with the text View
+        menuBar.add(menu1);//add menu1 to the menubar
+        JMenuItem ViewalarmItem = new JMenuItem("View Alarms"); //new Jmenuitem called viewalarmitem , set text to View Alarms
+        menu1.add(ViewalarmItem); //add viewalarmsitem to menu
+        final JFrame viewalarm = new JFrame(); //initialize new frame and call it viewalarm
+        viewalarm.setTitle("View Alarm"); //set title of viewalarm frame to "View Alarm"
+        viewalarm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //dispose of frame once closed
+        viewalarm.setSize(400, 400); //set size of frame to 400 width and 400 height
  
-            addalarm.setVisible(true);
-            }
-
+        
+         /**
+         *listener for the add alarm menu item. 
+         *once pressed the program runs the code 
+         */  
+        addalarmitem.addActionListener(new ActionListener() { 
+        @Override
+        public void actionPerformed(ActionEvent e) 
+        {
+            addalarm.setVisible(true);//sets frame addalarm visible to true
+        }
         });
-         
-         
         
-        
-         JMenuItem deletealarmitem = new JMenuItem("Delete Alarm");
-
-        menu.add(deletealarmitem);
-
-         JMenu menu1 = new JMenu("View");
-
-        menuBar.add(menu1);
+         /**
+         *listener for the view alarm menu item. 
+         *once pressed the program runs the code before
+         */  
+         ViewalarmItem.addActionListener(new ActionListener() 
+         {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         { 
+         System.out.println(q); //prints queue
+         viewalarm.setVisible(true); //sets frame visablility to true
+         }
+         });
             
-        JMenuItem ViewalarmItem = new JMenuItem("View Alarms");
-
-        menu1.add(ViewalarmItem);
-         final JFrame viewalarm = new JFrame();
-         viewalarm.setTitle("View Alarm");
-           viewalarm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-         viewalarm.setSize(400, 400); 
-       
-         ViewalarmItem.addActionListener(new ActionListener() {
-           
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               
-                
-            System.out.println(q); 
-            viewalarm.setVisible(true);
-            }
-
-           
-      
-
-        });
+    /**
+   *listener for the exit menu item on the main frame. 
+   *exits program once pressed
+   */     
          
-              exitMenuItem.addActionListener(new ActionListener() {
-           
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               
-                
-       
-            System.exit(0);
-            }
-
-           
-      
-
-        });
+    exitMenuItem.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+    System.exit(0);
+    }
+    });
               
               
-              Addalarmbutton.addActionListener(new ActionListener()
-{
+              
+   /**
+   *listener for the addbutton on the addalarm frame. 
+   *if pressed it validated the information entered by user and performed pop ups if incorrect.
+   *if all data is correct then alarm is added to the array.
+   */                              
+  Addalarmbutton.addActionListener(new ActionListener(){
   @Override
   public void actionPerformed(ActionEvent e)
   {
-    // display/center the jdialog when the button is pressed
-      
-      String InputDate = Date.getText();
-       String InputTime = Time.getText();
-       DateFormat dateformat = new SimpleDateFormat("yyyyMMdd");
-       DateFormat timeformat = new SimpleDateFormat("HH:mm:ss");
-        dateformat.setLenient(false);
-        timeformat.setLenient(false);
+        String InputDate = Date.getText(); //get date entered by user in the date box
+        String InputTime = Time.getText(); //get time entered by user in the time box
+        DateFormat dateformat = new SimpleDateFormat("yyyyMMdd"); //set format of date
+        DateFormat timeformat = new SimpleDateFormat("HH:mm:ss"); //set format of time
+        dateformat.setLenient(false); //non lenient format
+        timeformat.setLenient(false); //non lenient format
         
         
      
           
-        
-        try {
-            dateformat.parse(InputDate);
-            LocalTime.parse(InputTime);
-           String InputAlarm = alarmname.getText();
+        //try following
+        try 
+        {
+                dateformat.parse(InputDate); //parse inputed date of user into the dataformat specified
+                LocalTime.parse(InputTime); //parse inputed date of user into the dataformat specified
+                String InputAlarm = alarmname.getText(); //get name of alarm entered by user and store in string variable
             
-            
+                //removes : from time formated variable
                 String regx = ":";
                 char[] ca = regx.toCharArray();
                  for (char c : ca) {
                    InputTime = InputTime.replace(""+c, "");
-             }
+                }
          
-            
-             
-               String ConcatAlarm = InputDate+InputTime;
-             
-               
+                String ConcatAlarm = InputDate+InputTime; //concationation of inputdate and inputtime stored in a variable
+
+                long priority = Long.parseLong(ConcatAlarm.substring(ConcatAlarm.lastIndexOf(' ') + 1)); // parses priority of alarm from string to long
                 
-               
-                long priority = Long.parseLong(ConcatAlarm.substring(ConcatAlarm.lastIndexOf(' ') + 1));
+                Alarm alarm = new Alarm(InputAlarm,priority); //create new alarm item with input name and priority.
                 
-                 Alarm alarm = new Alarm(InputAlarm,priority);
-                
-             
-                try {
+                 //try following.
+                try 
+                {
                     
-                    if(priority<=now){
+                    if(priority<=now){ //if the alarm entered by user is lower then the current time then
                     
+                    // displayed pop up if date entered by user is before the current time set
                     JOptionPane.showMessageDialog(addalarm, "Date needs to be set in the future : Set Date Time in futute", "Wrong Date", JOptionPane.ERROR_MESSAGE);
-                    
                     }
-                    else{
-                    q.add(alarm, priority);
-                     String MessageAdd = "Adding a Alarm called " + alarm.getName() + " with the Date" + InputDate + " and Time " +InputTime ;
-                JOptionPane.showMessageDialog(addalarm, MessageAdd, "Added Alarm", JOptionPane.INFORMATION_MESSAGE);
-                    }} catch (QueueOverflowException a) {
                     
-                    
+                    else
+                    {
+                        q.add(alarm, priority); //adds alarm with name and priority to the array;
+                        String MessageAdd = "Adding a Alarm called " + alarm.getName() + " with the Date" + InputDate + " and Time " +InputTime ; // message to display to user stating datetime and name of alarm
+                        JOptionPane.showMessageDialog(addalarm, MessageAdd, "Added Alarm", JOptionPane.INFORMATION_MESSAGE); //pop up informing user that the alarm is added
+                    }
+                } //displays message if the queue is full
+              catch (QueueOverflowException a) 
+               {
                      JOptionPane.showMessageDialog(addalarm, "Queue is Full : Remove Some Alarms!", "Queue Full", JOptionPane.INFORMATION_MESSAGE);
                     
                }
-             
-             //  JTextField DialogMessageName = new JTextField(InputAlarm);
-               // JTextField DialogMessage = new JTextField(ConcatAlarm);
-               
-                 //  DialogMessageName.setBounds(150,150,100,50);
-              // DialogMessage.setBounds(150,200,100,50);
-            
-               
-              //addalarm.add(DialogMessageName);
-             // addalarm.add(DialogMessage);
-              // addalarm.add(DialogMessageTime);
-              // DialogMessage.setVisible(true);
-              //DialogMessageTime.setVisible(true);
-             
-            
+
+          //shows pop ups if the formats entered by user are invalid  
         } catch (ParseException | DateTimeParseException eg) {
-            
-            
-          
-            
-           JOptionPane.showMessageDialog(addalarm, "Wrong Format (yyyyMMdd)", "Date", JOptionPane.ERROR_MESSAGE);
+
+           JOptionPane.showMessageDialog(addalarm, "Wrong Format (yyyyMMdd)", "Date", JOptionPane.ERROR_MESSAGE); 
            JOptionPane.showMessageDialog(addalarm, "Wrong Format (HH:mm:ss)", "Time", JOptionPane.ERROR_MESSAGE);
              
         }
-       
-      
-  }
-});
-
-        Clear.addActionListener(new ActionListener(){
+        }
+        });
+      /**
+    * Listener method for clear button . 
+    * if clear button is pressed in the addalarm frame run certain code.
+    * code will clear all text fields and dispose of the current frame 
+    * resets the frame by dispose method and sets it to visible again
+    */     
+    Clear.addActionListener(new ActionListener(){
     public void actionPerformed(ActionEvent e){
         Date.setText("");
         Time.setText("");
@@ -339,114 +318,233 @@ public class View implements Observer {
        // ErrorMessageDate.setText("");
         //textfield.setText(null); //or use this
     }
-});
+    });
               
  
         
-        frame.pack();
-        frame.setVisible(true);
+        frame.pack(); //pack frame 
+        frame.setVisible(true); //set frame visability to true
         
-        
-        
-        class checkalarm extends TimerTask {
+      /**
+    * Method used to check whether alarm stored in the head is equal to the current time. 
+    * if so the alarm will display a message and play a sound.
+    */         
+    class checkalarm extends TimerTask {
     @Override
     public void run() {
+        
+        //try following
         try{
-            long alarm = q.head().getAlarm();
+          
+         //create new instance of calender to collect date time values   
+         Calendar datecheck = Calendar.getInstance();
+             
+        //initialize variables to be used to store datetime values     
+        int day=0;
+        int month=0;
+        int year=0;
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
+  
+        //set current date and time values into seperate int variables 
+        day = datecheck.get(Calendar.DAY_OF_MONTH);
+        month = datecheck.get(Calendar.MONTH)+1;
+        year = datecheck.get(Calendar.YEAR);
+        hour = datecheck.get(Calendar.HOUR_OF_DAY);
+        minute = datecheck.get(Calendar.MINUTE);
+        second = datecheck.get(Calendar.SECOND);
+        
+ 
+        //converting integers int strings and assigning them to values.   
+        String day1 = Integer.toString(day); 
+        String month1 = Integer.toString(month); 
+        String year1 = Integer.toString(year); 
+        String hour1 = Integer.toString(hour); 
+        String minute1 = Integer.toString(minute); 
+        String second1 = Integer.toString(second);
+            
+       String currentdatestring =(day1+dash+month1+dash+year1+space+hour1+dot+minute1+dot+second1);  //use date and time variables to create a string of current dateandtime
+       currentdatelabel.setText(currentdatestring); //sets label in the addalarm frame text to currentdatestring value
+       
+       //sets long alarm to the current head items alarm value
+       long alarm = q.head().getAlarm();
                        
-       
+       Date time = new Date(); //sets new date instance to be used for the current time
         
-     
+       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); //sets format for the date
+       
+       String currenttime = sdf.format(time);  //sets string to formated current time
+  
+       Date current = new Date(); //sets new date instance to be used for the current date
         
-      
+       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd"); //sets format for the date
+       
+       
+       final String currentdate = dat.format(current); //sets string to formated currentdate
         
-        Date time = new Date();
+       //used for removing : from the time formated variable
+         String regx = ":";
+                char[] ca = regx.toCharArray();
+                 for (char c : ca) {
+                   currenttime = currenttime.replace(""+c, "");
+             }
+                 
+         String nowtime = currentdate+currenttime; //set string to concationation of currenttime and date.
+         
+         final long nowtimenow = Long.parseLong(nowtime); //parses string variable into a long 
+
+         if(nowtimenow ==alarm) //if current time equal the time of the alarm in the head 
+            {
+
+                   //try following.
+                   try 
+                   {
+                   AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(this.getClass().getResource("/clock/resources/alarm.wav"));//creates a new audio input stream and selects the location of the file.
+                   Clip clip = AudioSystem.getClip(); //collects clip specified in the audio stream
+                   clip.open(audioInputStream); //opens the file which plays the alarm sound
+                   clip.start(); //starts alarm clock timer
+                   //q.remove();
+                   JOptionPane.showMessageDialog(frame, "Alarm Going Off", "ALARM!!!!", JOptionPane.INFORMATION_MESSAGE); //pop up to show alarm going off
+
+                    }
+             catch (Exception ex) {ex.printStackTrace();}//catches second try with printstacktrace
+ 
+            }//closes if statement
+         
+        } //closes first try. 
+        catch (QueueUnderflowException ex)
+        {
+          //displays errror message if array is empty
+             // JOptionPane.showMessageDialog(frame, "Alarm Array Empty :No Alarm Set", "Alarms", JOptionPane.ERROR_MESSAGE);             
+        }
+                  
+        }
+ 
+    }
+    
+     /**
+    * Method used to check whether alarms stored in the array are not set before the current time. 
+    * if they are found they are removed from the array.
+    */   
+    class checkarray extends TimerTask {
+    @Override
+    public void run() {
+        //try following
+        try{
+       //create a new instance of calender to use for fetching current date and time     
+       Calendar datecheck = Calendar.getInstance();
         
-       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); //like "HH:mm" or just "mm", whatever you want
+       //int used to store values of current date and time      
+       int day=0;
+       int month=0;
+       int year=0;
+       int hour = 0;
+       int minute = 0;
+       int second = 0;
+   
+       //set values of ints to current date and time values.     
+       day = datecheck.get(Calendar.DAY_OF_MONTH);
+       month = datecheck.get(Calendar.MONTH)+1; //sets current month into a int variable (+ plus 1 due to months starting at 0)
+       year = datecheck.get(Calendar.YEAR);
+       hour = datecheck.get(Calendar.HOUR_OF_DAY);
+       minute = datecheck.get(Calendar.MINUTE);
+       second = datecheck.get(Calendar.SECOND);
+          
+       //converts interger values used to store datetime values into strings.    
+       String day1 = Integer.toString(day); 
+       String month1 = Integer.toString(month); 
+       String year1 = Integer.toString(year); 
+       String hour1 = Integer.toString(hour); 
+       String minute1 = Integer.toString(minute); 
+       String second1 = Integer.toString(second);
+            
+       String currentdatestring =(day1+dash+month1+dash+year1+space+hour1+dot+minute1+dot+second1); //creates the currentdate string using variables and characters stored in previous date variables
+       currentdatelabel.setText(currentdatestring); //sets text label on the addalarm frame to the currentdatestring
        
-       
-       String currenttime = sdf.format(time);
-       
-       
-       Date current = new Date();
+       long alarm = q.head().getAlarm(); // sets new long variable to the current heads alarm value
+
+       Date time = new Date(); //creates new date variable to store the current time
         
-       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd"); //like "HH:mm" or just "mm", whatever you want
+       SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); //sets format for the current time
+
+       String currenttime = sdf.format(time);  //creates new date variable to store the current time
        
+       Date current = new Date(); //creates new date variable to store the current date
+        
+       SimpleDateFormat dat = new SimpleDateFormat("yyyyMMdd");//sets format for the current date
        
+       //set string to formated version of date sorted in current
        final String currentdate = dat.format(current);
-           String regx = ":";
+       //this replaces and removes the : in the time insert   
+       String regx = ":";
                 char[] ca = regx.toCharArray();
                  for (char c : ca) {
                    currenttime = currenttime.replace(""+c, "");
              }
       
-                String nowtime = currentdate+currenttime;
-                final long nowtimenow = Long.parseLong(nowtime);
-                   
-       
-            
-            
-            
-       
-                   
-            
-                    if(nowtimenow ==alarm){
-                   // System.out.println("ALARM!!!!!!");
-                         try {
-                   AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(this.getClass().getResource("/clock/resources/alarm.wav"));
-                    Clip clip = AudioSystem.getClip();
-                   clip.open(audioInputStream);
-                   clip.start();
-                   q.remove();
-                     JOptionPane.showMessageDialog(frame, "Alarm Going Off", "ALARM!!!!", JOptionPane.INFORMATION_MESSAGE);
-                   
-                   
-                    }
-                          catch (Exception ex) {
-        ex.printStackTrace();
+        String nowtime = currentdate+currenttime; // set now string to concatination of currentdate and currenttime
+        final long nowtimenow = Long.parseLong(nowtime); //parse nowtime as a long and store in the nowtimenow variable.
+
+        if(alarm < nowtimenow) //if current item in the heads time is smaller than the current time then run.
+        {
         
-       
-         }
-                   
-               
-                   }
-                   
-                    
-                    
-                    
-                } catch (QueueUnderflowException ex) {
-                  
-                }
-                   
-       
-                 }
+        try 
+        {   
+        q.remove(); //removes item that is currently in the head
+        }
+        
+        catch (Exception ex) // catch for removing error | if empty
+        {ex.printStackTrace();} //displays error in console
+        
+        }//ends second try
+    
+        } //ends first try
+            // catches the error if array is empty
+            catch (QueueUnderflowException ex) 
+           {
+               //displays errror message if array is empty
+             // JOptionPane.showMessageDialog(frame, "Alarm Array Empty :No Alarm Set", "Alarms", JOptionPane.ERROR_MESSAGE);    
+           }
+       }
         
         
         
     }
-
-
-// And From your main() method or any other method
+         /**
+         * This timer is used to for the method which checks if the time of the head alarm matches current time. 
+         * This is used  as a timer to check whether any item in the array has a time lower than the current
+         *  the timer is set with no delay and runs the checkalarm() method every second
+          */
+       
+           
         Timer timer1 = new Timer();
         timer1.schedule(new checkalarm(), 0, 1000);
         
         
-   
-        
-        
-        
-        
-        
-        
+          /**
+         * This timer is used to for the method which checks the object array for items. 
+         * This is used  as a timer to check whether any item in the array has a time lower than the current
+         *  the timer is set with no delay and runs the checkarray() method every second
+  
+          */
+       
+        Timer timer2 = new Timer();
+        timer2.schedule(new checkarray(), 0, 1000);
+         
     }
     
     
-    
+     /**
+    * repaints the panel with the new clock data. 
+    * this is used to update the clock panel with new time data
+
+    * @param  o  link to object of interest to observer
+    * @param  arg selects object to update
+    */
     @Override
     public void update(Observable o, Object arg) {
         panel.repaint();
     }
-    
-    
-    
+  
 }

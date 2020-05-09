@@ -5,10 +5,10 @@
  */
 package clock;
 
-/**
- *
- * @author Damian
- */
+ /**
+  * class to deal with the queueunderflow exception
+  * this method is used when the queueunderflow exception is thrown
+     */
 class QueueUnderflowException extends Exception {
     
 }

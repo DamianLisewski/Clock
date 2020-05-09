@@ -63,5 +63,10 @@ public interface PriorityQueue<T> {
      *
      * For example: [(Fred, 10), (Mabel, 15), (Jane, 5)]
      */
+    
+    /**
+     * interface class used for display the stringed version of the queue
+   
+     */
     public String toString();
 }

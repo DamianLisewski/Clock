@@ -45,7 +45,11 @@ public class SortedArrayPriorityQueue<T> implements PriorityQueue<T> {
         capacity = size;
         tailIndex = -1;
     }
-
+    
+    /**
+     * Method used to collect the current item in the head of the queue
+     * return head item
+     */
     @Override
     public T head() throws QueueUnderflowException {
         if (isEmpty()) {
@@ -54,7 +58,11 @@ public class SortedArrayPriorityQueue<T> implements PriorityQueue<T> {
             return ((PriorityItem<T>) Alarms[0]).getItem();
         }
     }
-
+    
+     /**
+     * Method used to add alarms to the queue
+     * runs through queue looking for the location to be added
+     */
     @Override
     public void add(T item, long priority) throws QueueOverflowException {
         tailIndex = tailIndex + 1;
@@ -72,7 +80,9 @@ public class SortedArrayPriorityQueue<T> implements PriorityQueue<T> {
             Alarms[i] = new PriorityItem<>(item, priority);
         }
     }
-
+       /**
+     * Method used remove the item in the head of the queue
+     */
     @Override
     public void remove() throws QueueUnderflowException {
         if (isEmpty()) {
@@ -84,12 +94,17 @@ public class SortedArrayPriorityQueue<T> implements PriorityQueue<T> {
             tailIndex = tailIndex - 1;
         }
     }
-
+     /**
+     * Method used to check whether the queue is empty
+     */
     @Override
     public boolean isEmpty() {
         return tailIndex < 0;
     }
-
+    
+     /**
+     * Method used to display the queue of alarm
+     */
     @Override
     public String toString() {
         String result = "[";

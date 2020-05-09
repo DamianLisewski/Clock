@@ -1,5 +1,10 @@
 package clock;
 
+/**
+    
+    *main runnable class
+    * deals with the instanciation of the model ,view and controller, as well as the priority queue used for the alarm
+     */
 public class Clock {
     
     public static void main(String[] args) {

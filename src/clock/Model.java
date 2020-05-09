@@ -6,16 +6,25 @@ import java.util.Observable;
 
 public class Model extends Observable {
     
+    //initialise variables for calander values
     int hour = 0;
     int minute = 0;
     int second = 0;
-    
     int oldSecond = 0;
     
+    
+       /**
+    *constructor
+    * calls update method
+     */
     public Model() {
         update();
     }
     
+      /**
+    *method used for updating model
+    * uses current time and date values through the calender    
+     */
     public void update() {
         Calendar date = Calendar.getInstance();
         hour = date.get(Calendar.HOUR);

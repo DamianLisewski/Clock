@@ -6,6 +6,12 @@ import java.awt.geom.*;
 import java.awt.font.*;
 import javax.swing.*;
 
+  /**
+    
+    * deals with the maths behind the analog clock 
+    * it paints it of the model 
+     */
+
 public class ClockPanel extends JPanel {
     
     Model model;
@@ -13,7 +19,7 @@ public class ClockPanel extends JPanel {
     public ClockPanel(Model m) {
         model = m;
         setPreferredSize(new Dimension(200, 200));
-        setBackground(Color.white);
+        setBackground(Color.black);
     }
     
     public void paintComponent(Graphics g) {
@@ -58,6 +64,7 @@ public class ClockPanel extends JPanel {
         // Font font = new Font("SansSerif", Font.BOLD, size / 5);
         Font font = new Font("SansSerif", Font.PLAIN, size / 5);
         gg.setFont(font);
+         gg.setColor(Color.white);
         for (int n = 1; n <= 12; n++) {
             theta = (90 - n * 30) / (180 / Math.PI);
             radius = 0.9 * size;
@@ -78,6 +85,7 @@ public class ClockPanel extends JPanel {
         }
         
         // Draw the hour hand
+         gg.setColor(Color.white);
         gg.setStroke(new BasicStroke(2.0f));
         theta = (90 - (model.hour + model.minute / 60.0) * 30) / (180 / Math.PI);
         radius = 0.5 * size;
