@@ -8,11 +8,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -196,6 +198,63 @@ public class View implements Observer {
         Clear.setBounds(200,300,100,50); //set the location of clear button
         addalarm.add(Clear); //add clear button to the addalarm frame
            
+        
+        
+        
+             //create and add a new menu item to the menu
+        JMenuItem editalarmitem = new JMenuItem("Edit Closest Alarm");
+        menu.add(editalarmitem);
+        
+        final JFrame editalarm = new JFrame(); //create new frame called addalarm
+        editalarm.setLayout(null); //set layout of frame to null
+        editalarm.setSize(400, 400); //set size of frame
+         
+        JLabel editnamelabel =new JLabel("Alarm Name");  //set new label with a text 
+        editnamelabel.setBounds(160,10,100,50); //set location of the name label
+        final JTextField editnamefield = new JTextField("",20); //set new box  
+        editnamefield.setBounds(145,60,100,30); //set location of the name box
+       
+        final String editdash = "/"; //set string
+        final String editdashdot = ":"; //set string
+        final String editdashspace = " "; //set string 
+        
+        
+        final JLabel editcurrentdatelabel =new JLabel(""); //set new label without a text
+        editcurrentdatelabel.setBounds(150,250,120,50); //set location of current date time label
+        
+        JLabel editdatelabel =new JLabel("Date"); //set new label with a text 
+        editdatelabel.setBounds(80,110,50,50); //set location of the date label
+        JLabel editdateformat =new JLabel("(yyyymmdd)");  //set new label with a text
+        editdateformat.setBounds(60,150,100,50); //set location of the dateformat label
+        
+        JLabel edittimelabel =new JLabel("Time"); //set new label with a text  
+        edittimelabel.setBounds(280,110,50,50); //set location for the date format label
+        JLabel edittimeformat =new JLabel("(hh:mm:ss)"); //set new label with a text 
+        edittimeformat.setBounds(270,150,100,50); //set location for timeformat label
+
+        final JTextField editDate = new JTextField("",20); //initialise box for date
+        editDate.setBounds(50,200,100,30); //set location of date box 
+        final JTextField editTime = new JTextField("",20); //initialise box for time
+        editTime.setBounds(250,200,100,30); //set location of time box 
+        
+        editalarm.add(editcurrentdatelabel); // add current date label to editalarm frame
+        editalarm.add(editnamelabel); //add alarm name label to the editalarm frame
+        editalarm.add(editnamefield); //add alarm name box to the editalarm frame
+         
+        editalarm.add(editdatelabel); //add date label to editalarm frame
+        editalarm.add(editdateformat); //add date label to editalarm frame
+        editalarm.add(editDate); //add date box to editalarm frame
+         
+        editalarm.add(edittimelabel); //add time label to editalarm frame
+        editalarm.add(edittimeformat); //add time format label to editalarm frame
+        editalarm.add(editTime); //add time box to editalarm frame
+       
+        JButton Editalarmbutton = new JButton("Edit"); //create new button called editalarmbutton with text "edit"
+        Editalarmbutton.setBounds(145,300,100,50); //set the location of the button
+        editalarm.add(Editalarmbutton);//add edit button to the addalarm frame
+        
+        
+        
         JMenuItem deletealarmitem = new JMenuItem("Delete Closest Alarm"); //new Jmenuitem called deletealarmitem , set text to deleteitem
         menu.add(deletealarmitem); //add delete menu item to the menu
         
@@ -218,6 +277,7 @@ public class View implements Observer {
         public void actionPerformed(ActionEvent e) 
         {
             addalarm.setVisible(true);//sets frame addalarm visible to true
+            
         }
  
         
@@ -226,6 +286,56 @@ public class View implements Observer {
         
         
         );
+        
+               /**
+         *listener for the add alarm menu item. 
+         *once pressed the program runs the code 
+         */  
+        editalarmitem.addActionListener(new ActionListener() { 
+        @Override
+        public void actionPerformed(ActionEvent e) 
+        {
+          //sets frame addalarm visible to true
+            try {
+                editalarm.setVisible(true);  
+                editnamefield.setText(q.head().getName());
+                
+                String editd = Long.toString(q.head().getAlarm());
+               editd= editd.substring(0,8);
+               String editt = Long.toString(q.head().getAlarm());
+               editt= editt.substring(8,14);
+               
+               editt = insertPeriodically(editt, ":",  2);
+              
+                 
+                 
+               
+               editDate.setText(editd); 
+               editTime.setText(editt);
+                
+                
+            } catch (QueueUnderflowException ex) {
+                JOptionPane.showMessageDialog(frame, "No Alarm to Edit", "Empty Head", JOptionPane.ERROR_MESSAGE);
+                editalarm.dispose(); 
+            }
+        }
+ 
+        
+        }
+        
+        
+        
+        );
+        
+    /**
+     *
+     * @param text
+     * @param insert
+     * @param period
+     * @return
+     */
+
+        
         
          /**
          *listener for the add alarm frame. 
@@ -374,6 +484,113 @@ public class View implements Observer {
     });
               
  
+    
+     /**
+   *listener for the addbutton on the addalarm frame. 
+   *if pressed it validated the information entered by user and performed pop ups if incorrect.
+   *if all data is correct then alarm is added to the array.
+   */                              
+  Editalarmbutton.addActionListener(new ActionListener(){
+  @Override
+  public void actionPerformed(ActionEvent e)
+  {
+        String InputDate = editDate.getText(); //get date entered by user in the date box
+        String InputTime = editTime.getText(); //get time entered by user in the time box
+        DateFormat dateformat = new SimpleDateFormat("yyyyMMdd"); //set format of date
+        DateFormat timeformat = new SimpleDateFormat("HH:mm:ss"); //set format of time
+        dateformat.setLenient(false); //non lenient format
+        timeformat.setLenient(false); //non lenient format
+        
+        
+     
+          
+        //try following
+        try 
+        {
+                dateformat.parse(InputDate); //parse inputed date of user into the dataformat specified
+                LocalTime.parse(InputTime); //parse inputed date of user into the dataformat specified
+                String InputAlarm = editnamefield.getText(); //get name of alarm entered by user and store in string variable
+            
+                //removes : from time formated variable
+                String regx = ":";
+                char[] ca = regx.toCharArray();
+                 for (char c : ca) {
+                   InputTime = InputTime.replace(""+c, "");
+                }
+         
+                String ConcatAlarm = InputDate+InputTime; //concationation of inputdate and inputtime stored in a variable
+
+                long priority = Long.parseLong(ConcatAlarm.substring(ConcatAlarm.lastIndexOf(' ') + 1)); // parses priority of alarm from string to long
+                
+                q.remove();
+                Alarm alarm = new Alarm(InputAlarm,priority); //create new alarm item with input name and priority.
+                
+                 //try following.
+                try 
+                {
+                    
+                    if(priority<=now){ //if the alarm entered by user is lower then the current time then
+                    
+                    // displayed pop up if date entered by user is before the current time set
+                    JOptionPane.showMessageDialog(addalarm, "Date needs to be set in the future : Set Date Time in futute", "Wrong Date", JOptionPane.ERROR_MESSAGE);
+                    }
+                    
+                    else
+                    {
+                        q.add(alarm, priority); //edits alarm with name and priority to the array;
+                        String MessageAdd = "Editing a Alarm and calling it " + alarm.getName() + " with the Date" + InputDate + " and Time " +InputTime ; // message to display to user stating datetime and name of alarm
+                        JOptionPane.showMessageDialog(addalarm, MessageAdd, "Edited Alarm", JOptionPane.INFORMATION_MESSAGE); //pop up informing user that the alarm is added
+                    }
+                } //displays message if the queue is full
+              catch (QueueOverflowException a) 
+               {
+                     JOptionPane.showMessageDialog(addalarm, "Queue is Full : Remove Some Alarms!", "Queue Full", JOptionPane.INFORMATION_MESSAGE);
+                    
+               }
+
+          //shows pop ups if the formats entered by user are invalid  
+        } catch (ParseException | DateTimeParseException egf) {
+
+           JOptionPane.showMessageDialog(addalarm, "Wrong Format (yyyyMMdd)", "Date", JOptionPane.ERROR_MESSAGE); 
+           JOptionPane.showMessageDialog(addalarm, "Wrong Format (HH:mm:ss)", "Time", JOptionPane.ERROR_MESSAGE);
+             
+        } catch (QueueUnderflowException ex) {
+          JOptionPane.showMessageDialog(addalarm, "Head Empty", "Empty", JOptionPane.ERROR_MESSAGE);
+      }
+        }
+        });
+      /**
+    * Listener method for clear button . 
+    * if clear button is pressed in the addalarm frame run certain code.
+    * code will clear all text fields and dispose of the current frame 
+    * resets the frame by dispose method and sets it to visible again
+    */     
+    Clear.addActionListener(new ActionListener(){
+    public void actionPerformed(ActionEvent e){
+        Date.setText("");
+        Time.setText("");
+        alarmname.setText("");
+        addalarm.dispose();
+        addalarm.setVisible(true);
+     
+       // ErrorMessageDate.setText("");
+        //textfield.setText(null); //or use this
+    }
+    });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
         
         frame.pack(); //pack frame 
         frame.setVisible(true); //set frame visability to true
@@ -627,11 +844,18 @@ public class View implements Observer {
         @Override
         public void run() {
             
-            String s = q.toString();
-            Calendar calender = Calendar.getInstance();
+               String st = q.toString();
+               st = st.replace("[","").replace("]","");
+                st = st.replace("(","").replace(")","");
+                String[] arr = st.split(", ");
+               System.out.println(Arrays.toString(arr));
+               
+             // ArrayList arraylist = new ArrayList<>(Arrays.asList(arr));
+              
+
+              
+         // VAlarm alarm = new VAlarm();
             
-            VAlarm oneWeekBefore = new VAlarm();
-        
         }
     }, "Shutdown-thread"));
         
@@ -651,5 +875,42 @@ public class View implements Observer {
     public void update(Observable o, Object arg) {
         panel.repaint();
     }
+    
+        
+    
+     /**
+    * code used for periodically inserting chars into a string. 
+    * Reference 
+    * https://stackoverflow.com/questions/537174/putting-char-into-a-java-string-for-each-n-characters
+    * code by Jon Skeet
+    * 2009
+    *
+     * @param text
+     * @param insert
+     * @param period
+     * @return 
+    */
+    
+    
+    public static String insertPeriodically(
+    String text, String insert, int period)
+{
+    StringBuilder builder = new StringBuilder(
+         text.length() + insert.length() * (text.length()/period)+1);
+
+    int index = 0;
+    String prefix = "";
+    while (index < text.length())
+    {
+        // Don't put the insert in the very first iteration.
+        // This is easier than appending it *after* each substring
+        builder.append(prefix);
+        prefix = insert;
+        builder.append(text.substring(index, 
+            Math.min(index + period, text.length())));
+        index += period;
+    }
+    return builder.toString();
+}
   
 }

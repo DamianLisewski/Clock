@@ -37,6 +37,19 @@ public class Alarm {
         return alarm;
     }
       
+      
+          /**
+    *edit alarm method
+     * @param name
+     * @param alarm
+    *
+     */
+      public void editAlarm(String name, long alarm) {
+        this.name = name;
+        this.alarm = alarm;
+    
+    }
+      
         /**
     *method used for string version of alarm class  
     * @return string
