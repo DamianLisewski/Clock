@@ -425,6 +425,8 @@ public class View implements Observer {
                  for (char c : ca) {
                    InputTime = InputTime.replace(""+c, "");
                 }
+                 
+             
          
                 String ConcatAlarm = InputDate+InputTime; //concationation of inputdate and inputtime stored in a variable
 
@@ -444,8 +446,13 @@ public class View implements Observer {
                     
                     else
                     {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                        Date d1 = sdf.parse(InputDate);
+                        sdf.applyPattern("dd-MM-yyyy");
+                        String formated = sdf.format(d1);
+                        String formatedtime =insertPeriodically(InputTime, ":", 2);
                         q.add(alarm, priority); //adds alarm with name and priority to the array;
-                        String MessageAdd = "Adding a Alarm called " + alarm.getName() + " with the Date" + InputDate + " and Time " +InputTime ; // message to display to user stating datetime and name of alarm
+                        String MessageAdd = "Adding a Alarm called " + alarm.getName() + " with the Date [" + formated + "] and Time [" +formatedtime +"]" ; // message to display to user stating datetime and name of alarm
                         JOptionPane.showMessageDialog(addalarm, MessageAdd, "Added Alarm", JOptionPane.INFORMATION_MESSAGE); //pop up informing user that the alarm is added
                     }
                 } //displays message if the queue is full
@@ -517,6 +524,9 @@ public class View implements Observer {
                  for (char c : ca) {
                    InputTime = InputTime.replace(""+c, "");
                 }
+                 
+             
+         
          
                 String ConcatAlarm = InputDate+InputTime; //concationation of inputdate and inputtime stored in a variable
 
@@ -537,14 +547,20 @@ public class View implements Observer {
                     
                     else
                     {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                        Date d1 = sdf.parse(InputDate);
+                        sdf.applyPattern("dd-MM-yyyy");
+                        String formated = sdf.format(d1);
+                        String formatedtime =insertPeriodically(InputTime, ":", 2);
                         q.add(alarm, priority); //edits alarm with name and priority to the array;
-                        String MessageAdd = "Editing a Alarm and calling it " + alarm.getName() + " with the Date" + InputDate + " and Time " +InputTime ; // message to display to user stating datetime and name of alarm
+                        
+                        String MessageAdd = "Editing a Alarm and calling it " + alarm.getName() + " with the Date [" + formated + "] and Time [" +formatedtime +"]" ; // message to display to user stating datetime and name of alarm
                         JOptionPane.showMessageDialog(addalarm, MessageAdd, "Edited Alarm", JOptionPane.INFORMATION_MESSAGE); //pop up informing user that the alarm is added
                     }
                 } //displays message if the queue is full
               catch (QueueOverflowException a) 
                {
-                     JOptionPane.showMessageDialog(addalarm, "Queue is Full : Remove Some Alarms!", "Queue Full", JOptionPane.INFORMATION_MESSAGE);
+                     JOptionPane.showMessageDialog(editalarm, "Queue is Full : Remove Some Alarms!", "Queue Full", JOptionPane.INFORMATION_MESSAGE);
                     
                }
 
