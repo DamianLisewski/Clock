@@ -5,6 +5,9 @@ package clock;
  *
  * At the moment a alarm object just holds their name, but in a more realistic
  * system, there would obviously be more.
+ * @author Damian Lisewski 17002750 
+ * @version v1
+ * Date : 07/05/2020
  */
 public class Alarm {
 

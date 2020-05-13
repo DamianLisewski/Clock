@@ -7,6 +7,9 @@ import javax.swing.Timer;
     *Basic controller class for the MVC framework
     *initialised variables for the listener , timer 
     * initialised variables for the model , view 
+    * @author Damian Lisewski 17002750 
+ * @version v1
+ * Date : 07/05/2020
      */
 
 public class Controller {

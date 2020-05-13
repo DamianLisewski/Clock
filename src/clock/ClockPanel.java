@@ -10,6 +10,9 @@ import javax.swing.*;
     
     * deals with the maths behind the analog clock 
     * it paints it of the model 
+    * @author Damian Lisewski 17002750 
+ * @version v1
+ * Date : 07/05/2020
      */
 
 public class ClockPanel extends JPanel {

@@ -39,9 +39,11 @@ import queuemanager.*;
 
 /**
  *
- * @author Damian Lisewski 
- * @version 1
  * 
+ * @author Damian Lisewski 17002750 
+ * @version v1
+ * Date : 07/05/2020
+ 
  * Main class which deals with anything to do with the alarm system
  * it deals with the view of the GUI behind the alarm system
  * it also deals with the actions of some aspects of alarm system

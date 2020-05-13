@@ -4,6 +4,13 @@ import java.util.Calendar;
 import java.util.Observable;
 //import java.util.GregorianCalendar;
 
+/**
+
+ * @author Damian Lisewski 17002750 
+ * @version v1
+ * Date : 07/05/2020
+ */
+
 public class Model extends Observable {
     
     //initialise variables for calander values
