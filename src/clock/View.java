@@ -534,8 +534,7 @@ public class View implements Observer {
 
                 long priority = Long.parseLong(ConcatAlarm.substring(ConcatAlarm.lastIndexOf(' ') + 1)); // parses priority of alarm from string to long
                 
-                q.remove();
-                Alarm alarm = new Alarm(InputAlarm,priority); //create new alarm item with input name and priority.
+                 //create new alarm item with input name and priority.
                 
                  //try following.
                 try 
@@ -554,6 +553,8 @@ public class View implements Observer {
                         sdf.applyPattern("dd-MM-yyyy");
                         String formated = sdf.format(d1);
                         String formatedtime =insertPeriodically(InputTime, ":", 2);
+                        q.remove();
+                        Alarm alarm = new Alarm(InputAlarm,priority);
                         q.add(alarm, priority); //edits alarm with name and priority to the array;
                         
                         String MessageAdd = "Editing a Alarm and calling it " + alarm.getName() + " with the Date [" + formated + "] and Time [" +formatedtime +"]" ; // message to display to user stating datetime and name of alarm
